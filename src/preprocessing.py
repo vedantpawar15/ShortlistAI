@@ -117,7 +117,29 @@ class TextPreprocessor:
     def build_candidate_profiles(self, candidates: pd.DataFrame | Iterable[Mapping[str, Any]]) -> list[SemanticProfile]:
         """Return structured semantic profiles for all candidates."""
         records = self._records_from_candidates(candidates)
-        profiles = [self.build_candidate_profile(record) for record in records]
+        prepared_records: list[dict[str, Any]] = []
+        career_key_pattern = re.compile(r"career_history_(\d+)_(title|company|industry|description)")
+
+        for record in records:
+            prepared = dict(record)
+            if not isinstance(prepared.get("career_history"), list):
+                grouped_roles: dict[int, dict[str, Any]] = {}
+                for key, value in record.items():
+                    match = career_key_pattern.fullmatch(key)
+                    if match and is_meaningful(value):
+                        index = int(match.group(1))
+                        field_name = match.group(2)
+                        grouped_roles.setdefault(index, {})[field_name] = value
+
+                if grouped_roles:
+                    prepared["career_history"] = [grouped_roles[index] for index in sorted(grouped_roles)]
+                    for key in list(prepared):
+                        if career_key_pattern.fullmatch(key):
+                            prepared.pop(key)
+
+            prepared_records.append(prepared)
+
+        profiles = [self.build_candidate_profile(record) for record in prepared_records]
         logger.info("Built {} semantic candidate profiles", len(profiles))
         return profiles
 

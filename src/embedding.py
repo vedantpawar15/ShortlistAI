@@ -1,4 +1,4 @@
-﻿"""Offline-first embedding generation for semantic candidate ranking."""
+"""Offline-first embedding generation for semantic candidate ranking."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from typing import Any
 import numpy as np
 from loguru import logger
 
-PRIMARY_MODEL_NAME = "BAAI/bge-large-en-v1.5"
+PRIMARY_MODEL_NAME = "BAAI/bge-small-en-v1.5"
 FALLBACK_MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"
 DEFAULT_EMBEDDING_SUBDIR = "embeddings"
 DEFAULT_MODEL_CACHE_SUBDIR = "sentence_transformers"
@@ -33,7 +33,7 @@ class EmbeddingResult:
 
 
 class EmbeddingModel:
-    """Sentence Transformers wrapper with offline cache and persistent storage."""
+    """Sentence Transformers wrapper for cached BGE-small embeddings."""
 
     def __init__(
         self,
@@ -60,7 +60,7 @@ class EmbeddingModel:
         self.embedding_store_dir = self.outputs_dir / DEFAULT_EMBEDDING_SUBDIR
 
     def load(self, local_files_only: bool = False) -> None:
-        """Load cached weights first, then download once when cache is missing."""
+        """Load cached weights first, then download BGE-small when cache is missing."""
         if self.model is not None:
             return
 
@@ -81,7 +81,13 @@ class EmbeddingModel:
                     except Exception as exc:
                         mode = "local cache" if local_only else "huggingface download"
                         errors.append(f"{candidate_model} on {candidate_device} via {mode}: {exc}")
-                        logger.warning("Failed to load embedding model {} on {} via {}: {}", candidate_model, candidate_device, mode, exc)
+                        logger.warning(
+                            "Failed to load embedding model {} on {} via {}: {}",
+                            candidate_model,
+                            candidate_device,
+                            mode,
+                            exc,
+                        )
 
         self.device = original_device
         message = "Unable to load any embedding model. " + " | ".join(errors)
@@ -131,7 +137,13 @@ class EmbeddingModel:
         cleaned_documents = [str(document or "") for document in documents]
         self.load(local_files_only=False)
         model_name = self.loaded_model_name or self.model_name
-        cache_key = build_cache_key(cleaned_documents, model_name, self.batch_size, self.normalize_embeddings, cache_namespace)
+        cache_key = build_cache_key(
+            cleaned_documents,
+            model_name,
+            self.batch_size,
+            self.normalize_embeddings,
+            cache_namespace,
+        )
         embedding_path, metadata_path = self._cache_paths(cache_namespace, cache_key)
 
         if use_cache and embedding_path.exists() and metadata_path.exists():
@@ -312,6 +324,3 @@ def safe_path_name(value: str) -> str:
     """Return a filesystem-safe path segment."""
     cleaned = re.sub(r"[^0-9a-zA-Z._-]+", "_", value).strip("._-")
     return cleaned or "embeddings"
-
-
-

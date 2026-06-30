@@ -1,4 +1,4 @@
-﻿"""Tests for offline embedding generation and caching."""
+"""Tests for offline embedding generation and caching."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import json
 import numpy as np
 
 from src.embedding import (
+    PRIMARY_MODEL_NAME,
     EmbeddingModel,
     build_cache_key,
     coerce_documents,
@@ -62,6 +63,14 @@ def make_loaded_embedding_model(tmp_path) -> tuple[EmbeddingModel, FakeSentenceT
     model.model = fake
     model.loaded_model_name = "fake-model"
     return model, fake
+
+
+def test_default_model_uses_bge_small() -> None:
+    model = EmbeddingModel()
+
+    assert PRIMARY_MODEL_NAME == "BAAI/bge-small-en-v1.5"
+    assert model.model_name == "BAAI/bge-small-en-v1.5"
+    assert "large" not in model.model_name.lower()
 
 
 def test_embed_candidates_batches_and_persists_embeddings(tmp_path) -> None:
@@ -129,4 +138,3 @@ def test_cache_key_and_safe_path_name_are_stable() -> None:
     assert first == second
     assert first != different
     assert safe_path_name("jobs/main model") == "jobs_main_model"
-
