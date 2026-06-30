@@ -124,6 +124,28 @@ def test_coerce_documents_from_records_and_dataframe_like() -> None:
     assert coerce_documents("single document") == ["single document"]
 
 
+def test_coerce_documents_preprocesses_structured_candidate_and_job_records() -> None:
+    candidate = {
+        "candidate_id": "CAND_1",
+        "profile": {"summary": "Builds ML systems.", "current_title": "AI Engineer"},
+        "skills": [{"name": "Py"}, {"name": "NLP"}],
+    }
+    job = {
+        "job_id": "JOB_1",
+        "title": "Senior ML Engineer",
+        "description": "Python and TF systems in production.",
+        "required_skills": ["Python", "TF"],
+    }
+
+    candidate_document = coerce_documents(candidate)[0]
+    job_document = coerce_documents(job)[0]
+
+    assert "summary builds ml systems" in candidate_document
+    assert "skills python natural language processing" in candidate_document
+    assert "title senior ml engineer" in job_document
+    assert "required skills python tf" in job_document
+
+
 def test_document_from_record_prefers_semantic_fields() -> None:
     record = {"name": "Asha", "semantic_document": "best text", "description": "fallback"}
 

@@ -35,10 +35,13 @@ class FeatureEngineer:
 
     def build_features(self, candidates: pd.DataFrame, job: pd.Series) -> pd.DataFrame:
         """Build ranking features for candidates against one job."""
-        job_text = document_text(job.to_dict() if hasattr(job, "to_dict") else dict(job))
+        job_record = job.to_dict() if hasattr(job, "to_dict") else dict(job)
+        job_text = document_text(job_record)
         job_tokens = tokenize(job_text)
         job_skills = extract_skills(job_text, self.skill_normalizer)
         required_experience = extract_experience_years(job)
+        job_location = first_present(job_record, ("location",))
+        job_title = first_present(job_record, ("title", "job_title"))
         rows: list[dict[str, Any]] = []
 
         for index, candidate in candidates.reset_index(drop=True).iterrows():
@@ -47,11 +50,24 @@ class FeatureEngineer:
             candidate_tokens = tokenize(candidate_text)
             candidate_skills = extract_candidate_skills(candidate_record, candidate_text, self.skill_normalizer)
             candidate_experience = extract_experience_years(candidate)
+            candidate_title = first_present(
+                candidate_record,
+                (
+                    "profile_current_title",
+                    "current_title",
+                    "title",
+                    "profile_headline",
+                    "headline",
+                ),
+            )
 
             semantic_similarity = lexical_similarity(candidate_tokens, job_tokens)
             skill_overlap = overlap_score(candidate_skills, job_skills)
             experience_match = experience_score(candidate_experience, required_experience)
             education_match = education_score(candidate_record, job_text)
+            title_similarity = title_match_score(candidate_title, job_title)
+            location_match = location_score(candidate_record, job_location)
+            behavioral_signal_score = behavioral_score(candidate_record)
 
             rows.append(
                 {
@@ -61,20 +77,16 @@ class FeatureEngineer:
                     "skill_overlap": skill_overlap,
                     "experience_match": experience_match,
                     "education_match": education_match,
+                    "title_similarity": title_similarity,
+                    "location_match": location_match,
+                    "behavioral_signal_score": behavioral_signal_score,
                     "candidate_experience_years": candidate_experience,
                     "required_experience_years": required_experience,
+                    "matched_skill_count": len(candidate_skills & job_skills),
+                    "missing_skill_count": len(job_skills - candidate_skills),
                     "matched_skills": sorted(candidate_skills & job_skills),
                     "missing_skills": sorted(job_skills - candidate_skills),
-                    "candidate_title": first_present(
-                        candidate_record,
-                        (
-                            "profile_current_title",
-                            "current_title",
-                            "title",
-                            "profile_headline",
-                            "headline",
-                        ),
-                    ),
+                    "candidate_title": candidate_title,
                 }
             )
 
@@ -212,6 +224,49 @@ def education_score(record: dict[str, Any], job_text: str) -> float:
     if not any(term in job_lower for term in ("degree", "bachelor", "master", "phd", "computer science")):
         return 0.5
     return 1.0 if any(term in education_text for term in ("computer", "data", "ai", "ml", "science")) else 0.5
+
+
+def title_match_score(candidate_title: str, job_title: str) -> float:
+    """Score how similar the current candidate title is to the job title."""
+    if not candidate_title or not job_title:
+        return 0.0
+    return float(SequenceMatcher(None, candidate_title.lower(), job_title.lower()).ratio())
+
+
+def location_score(record: dict[str, Any], job_location: str) -> float:
+    """Score candidate location affinity to the job location."""
+    if not job_location:
+        return 0.5
+    candidate_location = ""
+    for key in ("location", "profile_location", "current_location"):
+        value = record.get(key)
+        if is_present(value) and str(value).strip():
+            candidate_location = str(value)
+            break
+    if not candidate_location:
+        return 0.0
+    return 1.0 if candidate_location.lower() in job_location.lower() or job_location.lower() in candidate_location.lower() else 0.2
+
+
+def behavioral_score(record: dict[str, Any]) -> float:
+    """Aggregate recruiter-signal fields into a bounded numeric score."""
+    numeric_values: list[float] = []
+    boolean_bonus = 0.0
+    for key, value in record.items():
+        key_text = str(key)
+        if not key_text.startswith("redrob_signals_"):
+            continue
+        if isinstance(value, bool):
+            boolean_bonus += 1.0 if value else 0.0
+            continue
+        try:
+            numeric_values.append(float(value))
+        except (TypeError, ValueError):
+            continue
+    if not numeric_values and boolean_bonus == 0.0:
+        return 0.0
+    normalized_numeric = sum(min(max(value, 0.0), 100.0) / 100.0 for value in numeric_values) / max(len(numeric_values), 1)
+    return float(min(1.0, normalized_numeric + (0.1 * boolean_bonus)))
 
 
 def first_present(record: dict[str, Any], keys: Iterable[str]) -> str:

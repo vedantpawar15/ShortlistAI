@@ -127,6 +127,49 @@ def test_preprocess_candidates_returns_cleaned_documents() -> None:
     assert documents == ["summary expert in js nlp and tf"]
 
 
+def test_build_job_profile_from_structured_job() -> None:
+    job = {
+        "job_id": "JOB_1",
+        "title": "Senior AI Engineer",
+        "description": "Build ML systems with Python, NLP, and K8s in production.",
+        "required_skills": ["Python", "ML", "NLP"],
+        "preferred_skills": "K8S | TF",
+        "experience_years": 6,
+        "education": "Bachelors in Computer Science",
+        "location": "Pune",
+    }
+
+    profile = TextPreprocessor().build_job_profile(job)
+
+    assert profile.job_id == "JOB_1"
+    assert profile.normalized_skills == [
+        "python",
+        "machine learning",
+        "natural language processing",
+        "kubernetes",
+        "tensorflow",
+        "artificial intelligence",
+    ]
+    assert "title senior ai engineer" in profile.document
+    assert "summary build ml systems with python nlp and k8s in production" in profile.document
+    assert "required skills python ml nlp" in profile.document
+    assert "preferred skills k8s tf" in profile.document
+    assert "experience 6" in profile.document
+    assert "education bachelors in computer science" in profile.document
+    assert "location pune" in profile.document
+    assert "skills python machine learning natural language processing kubernetes tensorflow" in profile.document
+
+
+def test_preprocess_jobs_returns_cleaned_documents() -> None:
+    jobs = [{"job_id": "JOB_2", "title": "ML Engineer", "description": "Python and TF systems"}]
+
+    documents = TextPreprocessor().preprocess_jobs(jobs)
+
+    assert documents == [
+        "title ml engineer summary python and tf systems skills machine learning python tensorflow"
+    ]
+
+
 def test_split_skill_text_handles_delimiters_and_json_lists() -> None:
     assert split_skill_text("Python | ML, SQL; NLP") == ["Python", "ML", "SQL", "NLP"]
     assert split_skill_text('[{"name": "JS"}, {"name": "TF"}]') == ["JS", "TF"]

@@ -13,6 +13,7 @@ from typing import Any
 import numpy as np
 
 from src.logging_utils import logger
+from src.preprocessing import TextPreprocessor
 
 PRIMARY_MODEL_NAME = "BAAI/bge-small-en-v1.5"
 FALLBACK_MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"
@@ -59,6 +60,7 @@ class EmbeddingModel:
         self.loaded_model_name: str | None = None
         self.model_cache_dir = self.models_dir / DEFAULT_MODEL_CACHE_SUBDIR
         self.embedding_store_dir = self.outputs_dir / DEFAULT_EMBEDDING_SUBDIR
+        self.preprocessor = TextPreprocessor()
 
     def load(self, local_files_only: bool = False) -> None:
         """Load cached weights first, then download BGE-small when cache is missing."""
@@ -112,7 +114,7 @@ class EmbeddingModel:
         persist: bool = True,
     ) -> EmbeddingResult:
         """Embed candidate semantic profile documents."""
-        documents = coerce_documents(candidates)
+        documents = coerce_documents(candidates, preprocessor=self.preprocessor, record_kind="candidate")
         logger.info("Embedding {} candidate documents", len(documents))
         return self.embed_documents(documents, cache_namespace="candidates", use_cache=use_cache, persist=persist)
 
@@ -123,7 +125,7 @@ class EmbeddingModel:
         persist: bool = True,
     ) -> EmbeddingResult:
         """Embed job description documents."""
-        documents = coerce_documents(jobs)
+        documents = coerce_documents(jobs, preprocessor=self.preprocessor, record_kind="job")
         logger.info("Embedding {} job documents", len(documents))
         return self.embed_documents(documents, cache_namespace="jobs", use_cache=use_cache, persist=persist)
 
@@ -265,29 +267,61 @@ def detect_device() -> str:
     return "cpu"
 
 
-def coerce_documents(items: Sequence[str] | Iterable[dict[str, Any]] | Any) -> list[str]:
+def coerce_documents(
+    items: Sequence[str] | Iterable[dict[str, Any]] | Any,
+    preprocessor: TextPreprocessor | None = None,
+    record_kind: str | None = None,
+) -> list[str]:
     """Convert strings, records, or DataFrame-like objects into documents."""
     if items is None:
         return []
     if isinstance(items, str):
         return [items]
+    preprocessor = preprocessor or TextPreprocessor()
     if isinstance(items, Mapping):
-        return [document_from_record(dict(items))]
+        return [document_from_record(dict(items), preprocessor=preprocessor, record_kind=record_kind)]
     if hasattr(items, "to_dict") and hasattr(items, "columns"):
         records = items.to_dict(orient="records")
-        return [document_from_record(record) for record in records]
+        inferred_kind = record_kind or infer_record_kind(records[0]) if records else record_kind
+        return [document_from_record(record, preprocessor=preprocessor, record_kind=inferred_kind) for record in records]
     if isinstance(items, Sequence) and all(isinstance(item, str) for item in items):
         return [str(item) for item in items]
-    return [document_from_record(item) if isinstance(item, dict) else str(item) for item in items]
+    inferred_kind = record_kind
+    documents: list[str] = []
+    for item in items:
+        if isinstance(item, dict):
+            inferred_kind = inferred_kind or infer_record_kind(item)
+            documents.append(document_from_record(item, preprocessor=preprocessor, record_kind=inferred_kind))
+        else:
+            documents.append(str(item))
+    return documents
 
 
-def document_from_record(record: dict[str, Any]) -> str:
+def document_from_record(
+    record: dict[str, Any],
+    preprocessor: TextPreprocessor | None = None,
+    record_kind: str | None = None,
+) -> str:
     """Select the best text field from a candidate or job record."""
-    preferred_fields = (
+    semantic_fields = (
         "semantic_document",
         "document",
         "cleaned_document",
         "profile_document",
+    )
+    for field_name in semantic_fields:
+        value = record.get(field_name)
+        if value:
+            return str(value)
+
+    preprocessor = preprocessor or TextPreprocessor()
+    inferred_kind = record_kind or infer_record_kind(record)
+    if inferred_kind == "candidate":
+        return preprocessor.build_candidate_profile(record).document
+    if inferred_kind == "job":
+        return preprocessor.build_job_profile(record).document
+
+    preferred_fields = (
         "description",
         "job_description",
         "summary",
@@ -299,6 +333,17 @@ def document_from_record(record: dict[str, Any]) -> str:
         if value:
             return str(value)
     return " ".join(str(value) for value in record.values() if value is not None)
+
+
+def infer_record_kind(record: Mapping[str, Any]) -> str | None:
+    """Infer whether a structured record is candidate-like or job-like."""
+    candidate_markers = {"candidate_id", "profile", "career_history", "redrob_signals"}
+    job_markers = {"job_id", "required_skills", "preferred_skills", "job_description", "source_file"}
+    if any(marker in record for marker in candidate_markers):
+        return "candidate"
+    if any(marker in record for marker in job_markers):
+        return "job"
+    return None
 
 
 def build_cache_key(

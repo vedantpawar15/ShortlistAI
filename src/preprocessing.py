@@ -52,6 +52,16 @@ SECTION_ORDER = (
     "current_company",
 )
 
+JOB_SECTION_ORDER = (
+    "title",
+    "summary",
+    "required_skills",
+    "preferred_skills",
+    "experience",
+    "education",
+    "location",
+)
+
 CAREER_HISTORY_FIELD_ORDER = (
     "title",
     "role",
@@ -91,6 +101,16 @@ class SemanticProfile:
     """Structured semantic profile generated for one candidate."""
 
     candidate_id: str | None
+    document: str
+    sections: dict[str, str] = field(default_factory=dict)
+    normalized_skills: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class JobProfile:
+    """Structured semantic profile generated for one job."""
+
+    job_id: str | None
     document: str
     sections: dict[str, str] = field(default_factory=dict)
     normalized_skills: list[str] = field(default_factory=list)
@@ -153,6 +173,10 @@ class TextPreprocessor:
         """Convert every candidate row into one cleaned semantic document."""
         return [profile.document for profile in self.build_candidate_profiles(candidates)]
 
+    def preprocess_jobs(self, jobs: pd.DataFrame | Iterable[Mapping[str, Any]]) -> list[str]:
+        """Convert every job row into one cleaned semantic document."""
+        return [profile.document for profile in self.build_job_profiles(jobs)]
+
     def build_candidate_profiles(self, candidates: pd.DataFrame | Iterable[Mapping[str, Any]]) -> list[SemanticProfile]:
         """Return structured semantic profiles for all candidates."""
         records = self._records_from_candidates(candidates)
@@ -180,6 +204,13 @@ class TextPreprocessor:
 
         profiles = [self.build_candidate_profile(record) for record in prepared_records]
         logger.info("Built {} semantic candidate profiles", len(profiles))
+        return profiles
+
+    def build_job_profiles(self, jobs: pd.DataFrame | Iterable[Mapping[str, Any]]) -> list[JobProfile]:
+        """Return structured semantic profiles for all jobs."""
+        records = self._records_from_candidates(jobs)
+        profiles = [self.build_job_profile(record) for record in records]
+        logger.info("Built {} semantic job profiles", len(profiles))
         return profiles
 
     def build_candidate_profile(self, candidate: Mapping[str, Any] | pd.Series) -> SemanticProfile:
@@ -218,6 +249,42 @@ class TextPreprocessor:
             normalized_skills=normalized_skills,
         )
 
+    def build_job_profile(self, job: Mapping[str, Any] | pd.Series) -> JobProfile:
+        """Build one structured semantic profile from a job record."""
+        record = self._record_to_dict(job)
+        normalized_skills = self.extract_normalized_job_skills(record)
+        sections = {
+            "title": self._collect_job_title(record),
+            "summary": self._collect_job_summary(record),
+            "required_skills": self._collect_job_skills(record, ("required_skills",)),
+            "preferred_skills": self._collect_job_skills(record, ("preferred_skills",)),
+            "experience": self._collect_job_experience(record),
+            "education": self._collect_job_education(record),
+            "location": self._collect_job_location(record),
+        }
+        cleaned_sections = {
+            section: self.preprocess(text)
+            for section, text in sections.items()
+            if self.preprocess(text)
+        }
+        if normalized_skills:
+            cleaned_sections["normalized_skills"] = self.preprocess(" ".join(normalized_skills))
+        document_parts = [
+            f"{section} {cleaned_sections[section]}"
+            for section in JOB_SECTION_ORDER
+            if section in cleaned_sections
+        ]
+        if "normalized_skills" in cleaned_sections:
+            document_parts.append(f"skills {cleaned_sections['normalized_skills']}")
+        document = self.preprocess(" ".join(document_parts))
+        job_id = self._first_value(record, "job_id", "id")
+        return JobProfile(
+            job_id=job_id,
+            document=document,
+            sections=cleaned_sections,
+            normalized_skills=normalized_skills,
+        )
+
     def extract_normalized_skills(self, candidate: Mapping[str, Any] | pd.Series) -> list[str]:
         """Extract and normalize skills from raw or flattened candidate records."""
         record = self._record_to_dict(candidate)
@@ -235,6 +302,23 @@ class TextPreprocessor:
             for key, value in record.items()
             if re.fullmatch(r"redrob_signals_skill_assessment_scores_[^_]+", key) and value is not None
         )
+        return self.skill_normalizer.normalize_many(skills)
+
+    def extract_normalized_job_skills(self, job: Mapping[str, Any] | pd.Series) -> list[str]:
+        """Extract and normalize skills from raw job fields and description text."""
+        record = self._record_to_dict(job)
+        skills: list[object] = []
+        for field_name in ("required_skills", "preferred_skills", "skills"):
+            raw_value = record.get(field_name)
+            if isinstance(raw_value, list):
+                skills.extend(self._extract_names_from_objects(raw_value, preferred_keys=("name", "skill")))
+            elif raw_value:
+                skills.extend(split_skill_text(raw_value))
+
+        for field_name in ("title", "description", "summary"):
+            value = record.get(field_name)
+            if value:
+                skills.extend(extract_alias_matches(str(value)))
         return self.skill_normalizer.normalize_many(skills)
 
     def clean_text(self, text: object) -> str:
@@ -390,6 +474,36 @@ class TextPreprocessor:
         )
         return join_values(parts)
 
+    def _collect_job_title(self, record: Mapping[str, Any]) -> str:
+        return join_values(self._values_for_keys(record, ("title", "job_title")))
+
+    def _collect_job_summary(self, record: Mapping[str, Any]) -> str:
+        return join_values(self._values_for_keys(record, ("summary", "description", "job_description")))
+
+    def _collect_job_skills(self, record: Mapping[str, Any], keys: tuple[str, ...]) -> str:
+        parts: list[object] = []
+        for key in keys:
+            raw_value = record.get(key)
+            if isinstance(raw_value, list):
+                parts.extend(self._extract_names_from_objects(raw_value, preferred_keys=("name", "skill")))
+            elif raw_value:
+                parts.extend(split_skill_text(raw_value))
+        return join_values(parts)
+
+    def _collect_job_experience(self, record: Mapping[str, Any]) -> str:
+        return join_values(
+            self._values_for_keys(
+                record,
+                ("experience_years", "years_of_experience", "required_experience_years", "experience"),
+            )
+        )
+
+    def _collect_job_education(self, record: Mapping[str, Any]) -> str:
+        return join_values(self._values_for_keys(record, ("education", "required_education", "preferred_education")))
+
+    def _collect_job_location(self, record: Mapping[str, Any]) -> str:
+        return join_values(self._values_for_keys(record, ("location", "job_location")))
+
     def _records_from_candidates(self, candidates: pd.DataFrame | Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
         if isinstance(candidates, pd.DataFrame):
             return candidates.to_dict(orient="records")
@@ -430,6 +544,16 @@ def split_skill_text(value: object) -> list[str]:
             return [str(item.get("name", item)) if isinstance(item, Mapping) else str(item) for item in parsed]
         return [part.strip() for part in re.split(r"\s*(?:\||,|;|/)\s*", value) if part.strip()]
     return [str(value)]
+
+
+def extract_alias_matches(text: str) -> list[str]:
+    """Extract known skill aliases from free-form text."""
+    lowered = text.lower()
+    matches: list[str] = []
+    for alias in DEFAULT_SKILL_ALIASES:
+        if re.search(rf"\b{re.escape(alias)}\b", lowered):
+            matches.append(alias)
+    return matches
 
 
 def parse_json_if_possible(value: str) -> Any:
