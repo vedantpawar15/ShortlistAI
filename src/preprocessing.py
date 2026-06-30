@@ -11,8 +11,32 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import pandas as pd
-from loguru import logger
-from rapidfuzz import fuzz, process
+
+from src.logging_utils import logger
+
+try:
+    from rapidfuzz import fuzz, process
+except ImportError:
+    from difflib import SequenceMatcher
+
+    class fuzz:
+        """Fallback subset of rapidfuzz.fuzz."""
+
+        @staticmethod
+        def WRatio(left: object, right: object) -> float:
+            return SequenceMatcher(None, str(left), str(right)).ratio() * 100
+
+    class process:
+        """Fallback subset of rapidfuzz.process."""
+
+        @staticmethod
+        def extractOne(query: object, choices: Iterable[object], scorer: object) -> tuple[object, float, int] | None:
+            best: tuple[object, float, int] | None = None
+            for index, choice in enumerate(choices):
+                score = scorer(query, choice)
+                if best is None or score > best[1]:
+                    best = (choice, score, index)
+            return best
 
 SECTION_ORDER = (
     "summary",
@@ -26,6 +50,21 @@ SECTION_ORDER = (
     "experience",
     "current_role",
     "current_company",
+)
+
+CAREER_HISTORY_FIELD_ORDER = (
+    "title",
+    "role",
+    "position",
+    "company",
+    "organization",
+    "industry",
+    "company_size",
+    "description",
+    "start_date",
+    "end_date",
+    "duration_months",
+    "is_current",
 )
 
 DEFAULT_SKILL_ALIASES = {
@@ -118,7 +157,7 @@ class TextPreprocessor:
         """Return structured semantic profiles for all candidates."""
         records = self._records_from_candidates(candidates)
         prepared_records: list[dict[str, Any]] = []
-        career_key_pattern = re.compile(r"career_history_(\d+)_(title|company|industry|description)")
+        career_key_pattern = re.compile(r"career_history_(\d+)_(.+)")
 
         for record in records:
             prepared = dict(record)
@@ -284,11 +323,11 @@ class TextPreprocessor:
         if isinstance(career_history, list):
             for role in career_history:
                 if isinstance(role, Mapping):
-                    parts.extend(self._values_for_keys(role, ("title", "company", "industry", "description")))
+                    parts.extend(ordered_mapping_values(role, CAREER_HISTORY_FIELD_ORDER))
         parts.extend(
             value
-            for key, value in sorted(record.items())
-            if re.fullmatch(r"career_history_\d+_(title|company|industry|description)", key) and value
+            for key, value in sorted(record.items(), key=career_history_sort_key)
+            if re.fullmatch(r"career_history_\d+_.+", key) and is_meaningful(value)
         )
         return join_values(parts)
 
@@ -438,3 +477,32 @@ def format_signal(key: object, value: object) -> str:
     if isinstance(value, list):
         return f"{key_text} {join_values(value)}"
     return f"{key_text} {value}"
+
+
+def ordered_mapping_values(record: Mapping[str, Any], preferred_keys: Iterable[str]) -> list[object]:
+    """Return meaningful mapping values in semantic order, then append remaining fields."""
+    values: list[object] = []
+    seen: set[str] = set()
+    for key in preferred_keys:
+        if key in record and is_meaningful(record[key]):
+            values.append(record[key])
+            seen.add(key)
+    for key, value in record.items():
+        if key not in seen and is_meaningful(value):
+            values.append(value)
+    return values
+
+
+def career_history_sort_key(item: tuple[str, Any]) -> tuple[int, int, str]:
+    """Sort flattened career-history fields by role index and semantic field order."""
+    key, _ = item
+    match = re.fullmatch(r"career_history_(\d+)_(.+)", key)
+    if not match:
+        return (10**9, len(CAREER_HISTORY_FIELD_ORDER), key)
+    index = int(match.group(1))
+    field_name = match.group(2)
+    try:
+        field_order = CAREER_HISTORY_FIELD_ORDER.index(field_name)
+    except ValueError:
+        field_order = len(CAREER_HISTORY_FIELD_ORDER)
+    return (index, field_order, field_name)

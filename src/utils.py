@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from loguru import logger
+from src.logging_utils import logger
 
 
 def ensure_directory(path: Path | str) -> Path:

@@ -11,7 +11,8 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from loguru import logger
+
+from src.logging_utils import logger
 
 PRIMARY_MODEL_NAME = "BAAI/bge-small-en-v1.5"
 FALLBACK_MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"

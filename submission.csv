@@ -1,0 +1,101 @@
+candidate_id,rank,score,reasoning
+CAND_0000001,1,0.5341,"Overall fit is driven by semantic similarity 0.10, skill overlap 1.00, and experience match 0.77."
+CAND_0000032,2,0.4683,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.75, and experience match 0.90."
+CAND_0000031,3,0.4476,"Overall fit is driven by semantic similarity 0.13, skill overlap 0.75, and experience match 0.67."
+CAND_0000044,4,0.4204,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.75, and experience match 0.63."
+CAND_0000010,5,0.4054,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.75, and experience match 0.51."
+CAND_0000034,6,0.4016,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 1.00."
+CAND_0000002,7,0.4006,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 1.00."
+CAND_0000048,8,0.3966,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 1.00."
+CAND_0000030,9,0.3952,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 1.00."
+CAND_0000043,10,0.3893,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 0.92."
+CAND_0000014,11,0.3856,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.93."
+CAND_0000024,12,0.3667,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.50, and experience match 0.83."
+CAND_0000025,13,0.3656,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.81."
+CAND_0000026,14,0.3587,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.76."
+CAND_0000018,15,0.3545,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.73."
+CAND_0000038,16,0.3502,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.50, and experience match 0.74."
+CAND_0000020,17,0.3451,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.50, and experience match 0.70."
+CAND_0000015,18,0.3385,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 0.60."
+CAND_0000042,19,0.3285,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.56."
+CAND_0000021,20,0.3204,"Overall fit is driven by semantic similarity 0.13, skill overlap 0.25, and experience match 1.00."
+CAND_0000035,21,0.3124,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.50, and experience match 0.48."
+CAND_0000017,22,0.3113,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.25, and experience match 1.00."
+CAND_0000004,23,0.3108,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 0.42."
+CAND_0000027,24,0.3102,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.43."
+CAND_0000009,25,0.3101,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.25, and experience match 1.00."
+CAND_0000045,26,0.3085,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
+CAND_0000005,27,0.3072,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
+CAND_0000041,28,0.307,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
+CAND_0000050,29,0.3066,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
+CAND_0000037,30,0.3064,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
+CAND_0000023,31,0.3059,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.41."
+CAND_0000049,32,0.305,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 1.00."
+CAND_0000036,33,0.3048,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 1.00."
+CAND_0000033,34,0.302,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 0.96."
+CAND_0000046,35,0.2815,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.87."
+CAND_0000011,36,0.2784,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.22."
+CAND_0000029,37,0.2753,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 0.80."
+CAND_0000019,38,0.2651,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 0.72."
+CAND_0000022,39,0.2557,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.50, and experience match 0.12."
+CAND_0000006,40,0.2534,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.67."
+CAND_0000007,41,0.2461,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.61."
+CAND_0000016,42,0.2459,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 0.59."
+CAND_0000039,43,0.2184,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.43."
+CAND_0000008,44,0.2082,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.40."
+CAND_0000047,45,0.1882,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.27."
+CAND_0000040,46,0.1758,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.18."
+CAND_0000028,47,0.1689,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.12."
+CAND_0000003,48,0.1679,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.12."
+CAND_0000013,49,0.167,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.12."
+CAND_0000012,50,0.1647,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.12."
+CAND_0000084,51,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000164,52,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000168,53,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000217,54,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000239,55,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000251,56,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000268,57,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000339,58,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000450,59,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000459,60,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000542,61,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000557,62,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000581,63,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000699,64,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000718,65,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000776,66,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000791,67,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000799,68,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000899,69,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000958,70,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001021,71,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001082,72,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001154,73,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001195,74,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001218,75,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001257,76,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001292,77,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001294,78,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001355,79,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001378,80,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001381,81,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001397,82,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001424,83,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001503,84,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001550,85,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001586,86,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001653,87,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001724,88,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001753,89,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001771,90,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001795,91,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001839,92,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002018,93,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002019,94,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002164,95,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002234,96,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002255,97,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002317,98,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002438,99,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002446,100,0.0,Candidate was present in the submission template but absent from sample_candidates.json.

@@ -11,8 +11,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 import pandas as pd
-from loguru import logger
+from pandas.api import types as pd_types
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from src.logging_utils import logger
 
 DatasetKind = Literal["candidates", "jobs", "submission", "candidate_schema"]
 
@@ -172,7 +174,7 @@ class DataLoader:
 
     def infer_schema(self, frame: pd.DataFrame) -> dict[str, str]:
         """Infer a simple column-to-dtype schema from a DataFrame."""
-        return {column: str(dtype) for column, dtype in frame.dtypes.items()}
+        return {column: normalized_dtype_name(dtype) for column, dtype in frame.dtypes.items()}
 
     def validate_schema(self, frame: pd.DataFrame, required_columns: list[str]) -> bool:
         """Validate that a dataset contains the expected columns."""
@@ -432,3 +434,10 @@ def none_if_missing(value: Any) -> Any:
     if isinstance(value, (list, dict)) and not value:
         return None
     return value
+
+
+def normalized_dtype_name(dtype: Any) -> str:
+    """Return stable dtype names across pandas versions and string backends."""
+    if pd_types.is_object_dtype(dtype) or pd_types.is_string_dtype(dtype):
+        return "object"
+    return str(dtype)

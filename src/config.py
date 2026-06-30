@@ -5,8 +5,15 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, Field
+
+try:
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+except ImportError:
+    BaseSettings = BaseModel
+
+    def SettingsConfigDict(**kwargs: object) -> dict[str, object]:
+        return dict(kwargs)
 
 
 class Settings(BaseSettings):
@@ -18,7 +25,7 @@ class Settings(BaseSettings):
     outputs_dir: Path = Field(default=Path("outputs"))
     logs_dir: Path = Field(default=Path("logs"))
     models_dir: Path = Field(default=Path("models"))
-    embedding_model_name: str = "BAAI/bge-large-en-v1.5"
+    embedding_model_name: str = "BAAI/bge-small-en-v1.5"
     faiss_index_name: str = "candidate_index.faiss"
     api_host: str = "0.0.0.0"
     api_port: int = 8000

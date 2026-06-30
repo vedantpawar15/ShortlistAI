@@ -25,5 +25,19 @@ class CandidateScorer:
 
     def score(self, features: pd.DataFrame) -> pd.Series:
         """Score candidates from engineered features."""
-        raise NotImplementedError("Candidate scoring will be implemented later.")
+        if features.empty:
+            return pd.Series(dtype=float)
+        required_columns = {
+            "semantic_similarity": self.weights.semantic_similarity,
+            "skill_overlap": self.weights.skill_overlap,
+            "experience_match": self.weights.experience_match,
+            "education_match": self.weights.education_match,
+        }
+        missing = [column for column in required_columns if column not in features]
+        if missing:
+            raise ValueError(f"Feature frame is missing required score columns: {missing}")
+
+        weighted = sum(features[column].fillna(0.0).astype(float) * weight for column, weight in required_columns.items())
+        total_weight = sum(required_columns.values())
+        return (weighted / total_weight).clip(lower=0.0, upper=1.0)
 
