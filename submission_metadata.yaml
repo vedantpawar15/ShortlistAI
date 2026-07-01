@@ -1,0 +1,8 @@
+team_id: "team_xxx"
+methodology: |
+  1. Hybrid Scoring Model: We combined dense embeddings (BGE-small) for semantic similarity with BM25/lexical fallback.
+  2. Honeypot Detection: Implemented a robust honeypot detection pre-filter to catch candidates claiming expert/advanced skills with 0 months of use, and candidates whose career tenure does not match their claimed years of experience.
+  3. Feature Engineering: Skill matching integrates duration, proficiency, and endorsement signals into a weighted quality score. Behavioral signals account for recency (decaying activity over 6 months), correctly penalize long notice periods and slow response times, and exclude salary expectations.
+  4. Reasoning: The explainer surfaces specific strengths, gaps, and behavioral caveats rather than a templated score restatement.
+  5. Optimization: Pre-computing TF-IDF variables per job and aggressive caching of embeddings keeps the CPU-only ranking step well under 5 minutes for 100K candidates.
+sandbox_link: "https://huggingface.co/spaces/team_xxx/shortlist-ai"

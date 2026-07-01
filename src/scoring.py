@@ -97,7 +97,12 @@ class CandidateScorer:
             for column, weight in active_columns.items()
         )
         total_weight = sum(active_columns.values())
-        return (weighted / total_weight).clip(lower=0.0, upper=1.0)
+        final_scores = (weighted / total_weight).clip(lower=0.0, upper=1.0)
+        
+        if "is_honeypot" in features.columns:
+            final_scores = final_scores * (~features["is_honeypot"].fillna(False).astype(bool)).astype(float)
+            
+        return final_scores
 
     def score_breakdown(self, features: pd.DataFrame) -> pd.DataFrame:
         """Return per-feature weighted score contributions for each candidate.

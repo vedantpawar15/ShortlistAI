@@ -27,12 +27,18 @@ except ImportError:
             if command is None:
                 raise SystemExit(f"Unknown command: {command_name}")
             if command_name == "rank":
-                output = Path("submission.csv")
+                candidates = Path("candidates.jsonl")
+                if "--candidates" in sys.argv:
+                    candidates = Path(sys.argv[sys.argv.index("--candidates") + 1])
+                if "-c" in sys.argv:
+                    candidates = Path(sys.argv[sys.argv.index("-c") + 1])
+                
+                output = Path("team_xxx.csv")
                 if "--output" in sys.argv:
                     output = Path(sys.argv[sys.argv.index("--output") + 1])
                 if "-o" in sys.argv:
                     output = Path(sys.argv[sys.argv.index("-o") + 1])
-                command(output)
+                command(candidates, output)
             else:
                 command()
 
@@ -60,13 +66,14 @@ cli = typer.Typer(help="RecruitAI offline candidate ranking system.")
 
 @cli.command()
 def rank(
-    output_path: Path = typer.Option(Path("submission.csv"), "--output", "-o", help="Submission CSV path."),
+    candidates_path: Path = typer.Option(Path("candidates.jsonl"), "--candidates", "-c", help="Input candidates JSONL path."),
+    output_path: Path = typer.Option(Path("team_xxx.csv"), "--output", "-o", help="Submission CSV path."),
 ) -> None:
     """Generate an offline ranked candidate submission from local datasets."""
     settings = get_settings()
     configure_logging(settings.logs_dir)
     loader = DataLoader(settings.data_dir)
-    candidates = loader.load_candidates("sample_candidates.json")
+    candidates = loader.load_candidates(candidates_path)
     jobs = loader.load_jobs("job_description.docx")
     job = jobs.iloc[0]
 

@@ -369,16 +369,10 @@ def flatten_list(key: str, values: list[Any]) -> dict[str, Any]:
         cleaned = [str(item).strip() for item in values if none_if_missing(item) is not None]
         return {key: " | ".join(cleaned) if cleaned else None}
 
-    flattened: dict[str, Any] = {key: json.dumps(values, ensure_ascii=True)}
-    for index, item in enumerate(values):
-        indexed_key = f"{key}_{index}"
-        if isinstance(item, Mapping):
-            flattened.update(flatten_record(item, indexed_key))
-        elif isinstance(item, list):
-            flattened.update(flatten_list(indexed_key, item))
-        else:
-            flattened[indexed_key] = none_if_missing(item)
-    return flattened
+    # For large lists of dicts (like 100k candidates' skills), expanding to columns
+    # causes massive Pandas block manager memory explosion. Return the raw list/JSON.
+    import json
+    return {key: json.dumps(values, ensure_ascii=True)}
 
 
 def normalize_dataframe(frame: pd.DataFrame) -> pd.DataFrame:

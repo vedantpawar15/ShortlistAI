@@ -26,7 +26,7 @@ DataLoader
                                 └── CandidateScorer  (weighted sum + hybrid blend)
                                       └── Reranker  (cross-encoder or RRF fusion)
                                             └── RankingExplainer  (batch-calibrated)
-                                                  └── submission.csv
+                                                  └── team.csv
 ```
 
 ### Hybrid Scoring
@@ -86,11 +86,11 @@ python -m venv .venv
 # Verify configuration
 python main.py health
 
-# Generate submission.csv
+# Generate team.csv
 python main.py rank
 
 # Validate submission format
-python tools/validate_submission.py submission.csv
+python tools/validate_submission.py team.csv
 
 # Start FastAPI REST server
 uvicorn src.api:app --reload
@@ -272,6 +272,18 @@ logs/                     Application log files
 | Reranker | `BAAI/bge-reranker-base` | optional, cross-encoder |
 
 Both are downloaded from HuggingFace Hub on first run and cached in `models/sentence_transformers/`. All subsequent runs are fully **offline**.
+
+---
+
+## Reproducing the Submission
+
+As per section 10.3 of the spec, you can reproduce our ranked output for the 100K candidate challenge using the following command:
+
+```bash
+python main.py rank --candidates ./candidates.jsonl --output ./team.csv
+```
+
+**Sandbox Link:** [Live Demo](https://your-demo.streamlit.app)
 
 ---
 

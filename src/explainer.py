@@ -148,25 +148,30 @@ class RankingExplainer:
                 gaps.append(gap_msg)
 
         # Build the summary string.
-        overall_score = features.get("score", None)
-        sem_score = score_breakdown.get("semantic_similarity", 0.0)
-        skill_score = score_breakdown.get("skill_overlap", 0.0)
-        exp_score = score_breakdown.get("experience_match", 0.0)
-
-        if overall_score is not None:
-            score_text = f"overall score {float(overall_score):.3f}"
+        if features.get("is_honeypot"):
+            summary = "Candidate disqualified due to inconsistent profile information (honeypot flags)."
         else:
-            score_text = (
-                f"semantic similarity {sem_score:.2f}, "
-                f"skill overlap {skill_score:.2f}, "
-                f"experience match {exp_score:.2f}"
-            )
+            strength_text = f"Strong fit: {strengths[0]}" if strengths else "Meets core requirements."
+            gap_text = f"Gap: {gaps[0]}" if gaps else "No major gaps."
+            
+            beh_score = features.get("behavioral_signal_score")
+            beh_text = ""
+            if beh_score is not None:
+                try:
+                    beh_score_val = float(beh_score)
+                    if beh_score_val < 0.4:
+                        beh_text = " Candidate has weak behavioral signals."
+                    elif beh_score_val > 0.8:
+                        beh_text = " Candidate has highly positive behavioral signals."
+                except (ValueError, TypeError):
+                    pass
 
-        percentile_text = ""
-        if percentile_rank is not None:
-            percentile_text = f" This places the candidate in the top {100 - percentile_rank:.0f}% of applicants."
+            percentile_text = ""
+            if percentile_rank is not None:
+                percentile_text = f" (Top {100 - percentile_rank:.0f}%)"
 
-        summary = f"Fit driven by {score_text}.{percentile_text}"
+            summary = f"{strength_text} {gap_text}{beh_text}{percentile_text}"
+
 
         return CandidateExplanation(
             candidate_id=str(candidate_id),

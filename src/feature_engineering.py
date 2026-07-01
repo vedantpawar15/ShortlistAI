@@ -99,7 +99,9 @@ class FeatureEngineer:
             else:
                 semantic_score = max(lex_sim, bm25_sim)
 
-            skill_overlap = overlap_score(candidate_skills, job_skills)
+            is_honeypot = detect_honeypot(candidate_record, candidate_experience)
+            rich_skills = extract_rich_skills(candidate_record, self.skill_normalizer)
+            skill_overlap = overlap_score(candidate_skills, job_skills, rich_skills)
             experience_match = experience_score(candidate_experience, required_experience)
             education_match = education_score(candidate_record, job_text)
             title_similarity = title_match_score(candidate_title, job_title)
@@ -119,6 +121,7 @@ class FeatureEngineer:
                     "title_similarity": title_similarity,
                     "location_match": location_match,
                     "behavioral_signal_score": behavioral_signal_score,
+                    "is_honeypot": is_honeypot,
                     "candidate_experience_years": candidate_experience,
                     "required_experience_years": required_experience,
                     "matched_skill_count": len(candidate_skills & job_skills),
@@ -260,11 +263,64 @@ def extract_skills(text: str, normalizer: SkillNormalizer) -> set[str]:
     return set(normalizer.normalize_many(found))
 
 
-def overlap_score(candidate_skills: set[str], job_skills: set[str]) -> float:
-    """Compute required-skill coverage."""
+def extract_rich_skills(record: dict[str, Any], normalizer: SkillNormalizer) -> dict[str, float]:
+    """Extract skills and assign them a weight based on proficiency, duration and endorsements."""
+    prof_weights = {"expert": 1.0, "advanced": 0.8, "intermediate": 0.5, "beginner": 0.2}
+    rich_skills: dict[str, float] = {}
+    
+    for i in range(100):
+        name_key = f"skills_{i}_name"
+        if name_key not in record:
+            if i > 5 and not any(k.startswith(f"skills_{i}") for k in record):
+                break
+            continue
+            
+        name_val = record[name_key]
+        if not name_val:
+            continue
+            
+        canonical_names = normalizer.normalize_many([str(name_val)])
+        if not canonical_names:
+            continue
+            
+        prof = str(record.get(f"skills_{i}_proficiency", "")).lower()
+        prof_weight = prof_weights.get(prof, 0.5)
+        
+        try:
+            dur = float(record.get(f"skills_{i}_duration_months") or 0.0)
+        except (TypeError, ValueError):
+            dur = 0.0
+            
+        try:
+            endorse = float(record.get(f"skills_{i}_endorsements") or 0.0)
+        except (TypeError, ValueError):
+            endorse = 0.0
+            
+        dur_weight = min(1.0, dur / 24.0) if dur > 0 else 0.1
+        endorse_weight = min(1.0, endorse / 10.0)
+        
+        skill_quality = (prof_weight * 0.4) + (dur_weight * 0.4) + (endorse_weight * 0.2)
+        
+        for c in canonical_names:
+            rich_skills[c] = max(rich_skills.get(c, 0.0), skill_quality)
+            
+    return rich_skills
+
+
+def overlap_score(candidate_skills: set[str], job_skills: set[str], rich_skills: dict[str, float] | None = None) -> float:
+    """Compute required-skill coverage weighted by skill quality."""
     if not job_skills:
         return 0.5
-    return len(candidate_skills & job_skills) / len(job_skills)
+    if rich_skills is None:
+        rich_skills = {}
+        
+    overlap_val = 0.0
+    for job_skill in job_skills:
+        if job_skill in candidate_skills:
+            quality = rich_skills.get(job_skill, 0.5)
+            overlap_val += quality
+            
+    return overlap_val / len(job_skills)
 
 
 # ---------------------------------------------------------------------------
@@ -364,27 +420,94 @@ def location_score(record: dict[str, Any], job_location: str) -> float:
     )
 
 
+def detect_honeypot(record: dict[str, Any], candidate_experience: float | None) -> bool:
+    """Flag candidates with impossible profiles."""
+    for i in range(100):
+        prof_key = f"skills_{i}_proficiency"
+        dur_key = f"skills_{i}_duration_months"
+        if prof_key in record:
+            prof = str(record[prof_key]).lower()
+            if prof in ("advanced", "expert"):
+                try:
+                    dur = float(record.get(dur_key) or 0.0)
+                    if dur == 0.0:
+                        return True
+                except (TypeError, ValueError):
+                    pass
+        else:
+            if i > 5 and not any(k.startswith(f"skills_{i}") for k in record):
+                break
+                
+    total_career_months = 0.0
+    for i in range(100):
+        dur_key = f"career_history_{i}_duration_months"
+        if dur_key in record:
+            try:
+                total_career_months += float(record[dur_key])
+            except (TypeError, ValueError):
+                pass
+        else:
+            if i > 5 and not any(k.startswith(f"career_history_{i}") for k in record):
+                break
+                
+    if candidate_experience is not None and candidate_experience > 0:
+        expected_months = candidate_experience * 12
+        if total_career_months > 0 and total_career_months < expected_months * 0.4:
+            return True
+            
+    return False
+
+
 def behavioral_score(record: dict[str, Any]) -> float:
     """Aggregate recruiter-signal fields into a bounded numeric score."""
-    numeric_values: list[float] = []
+    from datetime import datetime, timezone
+    score_components: list[float] = []
     boolean_bonus = 0.0
+    
     for key, value in record.items():
         key_text = str(key)
         if not key_text.startswith("redrob_signals_"):
             continue
+            
+        if "expected_salary_range" in key_text:
+            continue
+            
         if isinstance(value, bool):
             boolean_bonus += 1.0 if value else 0.0
             continue
+            
         try:
-            numeric_values.append(float(value))
+            val = float(value)
         except (TypeError, ValueError):
             continue
-    if not numeric_values and boolean_bonus == 0.0:
-        return 0.0
-    normalized_numeric = sum(min(max(value, 0.0), 100.0) / 100.0 for value in numeric_values) / max(
-        len(numeric_values), 1
-    )
-    return float(min(1.0, normalized_numeric + (0.1 * boolean_bonus)))
+            
+        if "notice_period_days" in key_text:
+            comp = max(0.0, 1.0 - (val / 90.0))
+            score_components.append(comp)
+        elif "avg_response_time_hours" in key_text:
+            comp = max(0.0, 1.0 - (val / 48.0))
+            score_components.append(comp)
+        else:
+            comp = min(max(val, 0.0), 100.0) / 100.0
+            score_components.append(comp)
+            
+    if not score_components and boolean_bonus == 0.0:
+        base_score = 0.0
+    else:
+        base_score = sum(score_components) / max(len(score_components), 1)
+        base_score = min(1.0, base_score + (0.1 * boolean_bonus))
+        
+    last_active = record.get("redrob_signals_last_active_date") or record.get("last_active_date")
+    if last_active:
+        try:
+            dt = datetime.strptime(str(last_active)[:10], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            days_ago = (datetime.now(timezone.utc) - dt).days
+            if days_ago > 180:
+                base_score *= 0.5
+        except ValueError:
+            pass
+            
+    return float(base_score)
 
 
 def reciprocal_rank_fusion(

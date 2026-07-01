@@ -127,7 +127,7 @@ This is the exact flow from raw files to ranked output:
               ▼
   OUTPUT
   ┌─────────────────────────────┐
-  │  submission.csv             │  candidate_id, rank, score, reasoning
+  │  team.csv                   │  candidate_id, rank, score, reasoning
   │  React SPA Dashboard        │  visual charts, radar graphs, 3D landing page
   │  REST API (/rank, /explain) │  integrate into any recruiter tool
   └─────────────────────────────┘
@@ -329,12 +329,12 @@ python -m pytest tests/ -v
 python main.py health
 # → RecruitAI is configured for project: RecruitAI
 
-# Step 2 — Rank candidates (reads data/, writes submission.csv)
+# Step 2 — Rank candidates (reads data/, writes team.csv)
 python main.py rank
-# → Wrote 50 ranked candidates to submission.csv
+# → Wrote 50 ranked candidates to team.csv
 
 # Step 3 — Validate output format
-python tools/validate_submission.py submission.csv
+python tools/validate_submission.py team.csv
 # → Submission is valid
 
 # Step 4 — Open the frontend
