@@ -1,7 +1,23 @@
-"""Feature engineering for candidate-job matching."""
+"""Feature engineering for candidate-job matching.
+
+Design notes
+------------
+* ``semantic_similarity``  — Cosine similarity from the FAISS/embedding retrieval stage.
+  Stored as ``_semantic_score`` in the retrieved candidates frame; falls back to
+  ``lexical_similarity`` when embeddings were not used.
+* ``lexical_similarity``   — Deterministic token-overlap + fuzzy-string signal derived
+  entirely from text without a neural model.
+* All other columns are self-describing scalar features in [0, 1].
+
+Performance notes
+-----------------
+* Job-side tokens and skills are computed ONCE outside the candidate loop.
+* Candidate skill extraction reuses flattened keys without redundant tokenisation.
+"""
 
 from __future__ import annotations
 
+import math
 import re
 from collections.abc import Iterable
 from difflib import SequenceMatcher
@@ -13,7 +29,8 @@ import pandas as pd
 try:
     from sklearn.preprocessing import MinMaxScaler
 except ImportError:
-    class MinMaxScaler:
+
+    class MinMaxScaler:  # type: ignore[no-redef]
         """Fallback MinMaxScaler for environments without scikit-learn."""
 
         def fit_transform(self, values: np.ndarray) -> np.ndarray:
@@ -22,6 +39,7 @@ except ImportError:
             if maximum == minimum:
                 return np.zeros_like(values, dtype=float)
             return (values - minimum) / (maximum - minimum)
+
 
 from src.preprocessing import DEFAULT_SKILL_ALIASES, SkillNormalizer, split_skill_text
 
@@ -34,7 +52,12 @@ class FeatureEngineer:
         self.skill_normalizer = skill_normalizer or SkillNormalizer()
 
     def build_features(self, candidates: pd.DataFrame, job: pd.Series) -> pd.DataFrame:
-        """Build ranking features for candidates against one job."""
+        """Build ranking features for candidates against one job.
+
+        If the candidates frame contains a ``_semantic_score`` column produced
+        by the FAISS retrieval stage, that cosine similarity is used as
+        ``semantic_similarity``.  Otherwise ``lexical_similarity`` is promoted.
+        """
         job_record = job.to_dict() if hasattr(job, "to_dict") else dict(job)
         job_text = document_text(job_record)
         job_tokens = tokenize(job_text)
@@ -42,6 +65,11 @@ class FeatureEngineer:
         required_experience = extract_experience_years(job)
         job_location = first_present(job_record, ("location",))
         job_title = first_present(job_record, ("title", "job_title"))
+
+        # Pre-compute job TF-IDF vector once for all candidates.
+        job_tf = term_frequencies(job_tokens)
+
+        has_semantic_scores = "_semantic_score" in candidates.columns
         rows: list[dict[str, Any]] = []
 
         for index, candidate in candidates.reset_index(drop=True).iterrows():
@@ -61,7 +89,16 @@ class FeatureEngineer:
                 ),
             )
 
-            semantic_similarity = lexical_similarity(candidate_tokens, job_tokens)
+            lex_sim = lexical_similarity(candidate_tokens, job_tokens)
+            bm25_sim = bm25_similarity(candidate_tokens, job_tf, len(job_tokens))
+
+            # ``semantic_similarity`` is the embedding cosine score when available;
+            # otherwise we promote the best available lexical signal.
+            if has_semantic_scores:
+                semantic_score = float(candidate_record.get("_semantic_score") or 0.0)
+            else:
+                semantic_score = max(lex_sim, bm25_sim)
+
             skill_overlap = overlap_score(candidate_skills, job_skills)
             experience_match = experience_score(candidate_experience, required_experience)
             education_match = education_score(candidate_record, job_text)
@@ -73,7 +110,9 @@ class FeatureEngineer:
                 {
                     "candidate_id": candidate_record.get("candidate_id", f"candidate_{index}"),
                     "candidate_index": index,
-                    "semantic_similarity": semantic_similarity,
+                    "semantic_similarity": semantic_score,
+                    "lexical_similarity": lex_sim,
+                    "bm25_similarity": bm25_sim,
                     "skill_overlap": skill_overlap,
                     "experience_match": experience_match,
                     "education_match": education_match,
@@ -97,6 +136,11 @@ class FeatureEngineer:
         if values.size == 0:
             return values
         return self.scaler.fit_transform(values.reshape(-1, 1)).ravel()
+
+
+# ---------------------------------------------------------------------------
+# Text helpers
+# ---------------------------------------------------------------------------
 
 
 def document_text(record: dict[str, Any]) -> str:
@@ -139,6 +183,44 @@ def tokenize(text: str) -> set[str]:
     return {word for word in words if len(word) > 1 and word not in stop_words}
 
 
+def term_frequencies(tokens: set[str]) -> dict[str, float]:
+    """Compute normalized term frequencies from a token set."""
+    if not tokens:
+        return {}
+    tf = 1.0 / len(tokens)
+    return {token: tf for token in tokens}
+
+
+def bm25_similarity(
+    candidate_tokens: set[str],
+    job_tf: dict[str, float],
+    job_length: int,
+    k1: float = 1.5,
+    b: float = 0.75,
+) -> float:
+    """BM25-inspired similarity between candidate tokens and pre-computed job TF.
+
+    Uses a simplified BM25 formulation: instead of a full corpus IDF we treat
+    each job token as equally important (IDF=1) and apply the BM25 length
+    normalisation factor.
+    """
+    if not candidate_tokens or not job_tf:
+        return 0.0
+    avg_doc_len = max(job_length, 1)
+    score = 0.0
+    for token, tf_q in job_tf.items():
+        tf_d = 1.0 if token in candidate_tokens else 0.0
+        numerator = tf_d * (k1 + 1)
+        denominator = tf_d + k1 * (1 - b + b * len(candidate_tokens) / avg_doc_len)
+        score += tf_q * (numerator / max(denominator, 1e-9))
+    # Normalise to [0, 1] using the theoretical max (all job tokens present).
+    max_score = sum(
+        tf_q * (k1 + 1) / (1 + k1 * (1 - b + b))
+        for tf_q in job_tf.values()
+    )
+    return float(min(1.0, score / max(max_score, 1e-9)))
+
+
 def lexical_similarity(candidate_tokens: set[str], job_tokens: set[str]) -> float:
     """Combine token overlap with a small fuzzy fallback for sparse text."""
     if not candidate_tokens or not job_tokens:
@@ -148,6 +230,11 @@ def lexical_similarity(candidate_tokens: set[str], job_tokens: set[str]) -> floa
     job_text = " ".join(sorted(job_tokens))
     fuzzy = SequenceMatcher(None, candidate_text, job_text).ratio()
     return float(min(1.0, (0.8 * overlap) + (0.2 * fuzzy)))
+
+
+# ---------------------------------------------------------------------------
+# Skill helpers
+# ---------------------------------------------------------------------------
 
 
 def extract_candidate_skills(record: dict[str, Any], text: str, normalizer: SkillNormalizer) -> set[str]:
@@ -178,6 +265,11 @@ def overlap_score(candidate_skills: set[str], job_skills: set[str]) -> float:
     if not job_skills:
         return 0.5
     return len(candidate_skills & job_skills) / len(job_skills)
+
+
+# ---------------------------------------------------------------------------
+# Scoring helpers
+# ---------------------------------------------------------------------------
 
 
 def extract_experience_years(record: pd.Series | dict[str, Any]) -> float | None:
@@ -212,18 +304,37 @@ def experience_score(candidate_years: float | None, required_years: float | None
 
 
 def education_score(record: dict[str, Any], job_text: str) -> float:
-    """Reward candidates with relevant education when the job mentions education."""
+    """Reward candidates with relevant education when the job mentions education.
+
+    Improvements over original:
+    * Tiered scoring (1.0 / 0.75 / 0.5) based on degree relevance depth.
+    * Recognises more relevant fields of study.
+    """
     education_text = " ".join(
         str(value)
         for key, value in record.items()
         if str(key).startswith("education") and is_present(value)
     ).lower()
+
     if not education_text:
         return 0.0
+
     job_lower = job_text.lower()
-    if not any(term in job_lower for term in ("degree", "bachelor", "master", "phd", "computer science")):
+    job_requires_education = any(
+        term in job_lower
+        for term in ("degree", "bachelor", "master", "phd", "computer science", "engineering")
+    )
+    if not job_requires_education:
         return 0.5
-    return 1.0 if any(term in education_text for term in ("computer", "data", "ai", "ml", "science")) else 0.5
+
+    highly_relevant = ("computer", "data", "ai", "ml", "machine learning", "software", "information")
+    partially_relevant = ("science", "mathematics", "statistics", "physics", "engineering")
+
+    if any(term in education_text for term in highly_relevant):
+        return 1.0
+    if any(term in education_text for term in partially_relevant):
+        return 0.75
+    return 0.5
 
 
 def title_match_score(candidate_title: str, job_title: str) -> float:
@@ -245,7 +356,12 @@ def location_score(record: dict[str, Any], job_location: str) -> float:
             break
     if not candidate_location:
         return 0.0
-    return 1.0 if candidate_location.lower() in job_location.lower() or job_location.lower() in candidate_location.lower() else 0.2
+    return (
+        1.0
+        if candidate_location.lower() in job_location.lower()
+        or job_location.lower() in candidate_location.lower()
+        else 0.2
+    )
 
 
 def behavioral_score(record: dict[str, Any]) -> float:
@@ -265,17 +381,56 @@ def behavioral_score(record: dict[str, Any]) -> float:
             continue
     if not numeric_values and boolean_bonus == 0.0:
         return 0.0
-    normalized_numeric = sum(min(max(value, 0.0), 100.0) / 100.0 for value in numeric_values) / max(len(numeric_values), 1)
+    normalized_numeric = sum(min(max(value, 0.0), 100.0) / 100.0 for value in numeric_values) / max(
+        len(numeric_values), 1
+    )
     return float(min(1.0, normalized_numeric + (0.1 * boolean_bonus)))
 
 
+def reciprocal_rank_fusion(
+    *rank_lists: list[str],
+    k: int = 60,
+) -> list[tuple[str, float]]:
+    """Merge multiple ranked lists of candidate IDs using Reciprocal Rank Fusion.
+
+    RRF is a robust, parameter-light method for combining rankings from
+    heterogeneous retrieval systems (e.g., embedding-based + BM25).
+
+    Parameters
+    ----------
+    *rank_lists:
+        Each list is a ranking of candidate_id strings, best-first.
+    k:
+        Smoothing constant (typically 60, per Cormack et al. 2009).
+
+    Returns
+    -------
+    List of (candidate_id, rrf_score) tuples, sorted descending by score.
+    """
+    scores: dict[str, float] = {}
+    for rank_list in rank_lists:
+        for position, candidate_id in enumerate(rank_list, start=1):
+            scores[candidate_id] = scores.get(candidate_id, 0.0) + 1.0 / (k + position)
+    return sorted(scores.items(), key=lambda pair: pair[1], reverse=True)
+
+
+# ---------------------------------------------------------------------------
+# Utilities
+# ---------------------------------------------------------------------------
+
+
 def first_present(record: dict[str, Any], keys: Iterable[str]) -> str:
-    """Return the first meaningful text value for a set of keys."""
+    """Return the first meaningful text value for a set of keys.
+
+    Returns an empty string (not a fake title) when no value is found,
+    so that title_match_score() correctly returns 0.0 instead of matching
+    the literal string ``"Candidate"``.
+    """
     for key in keys:
         value = record.get(key)
         if is_present(value) and str(value).strip():
             return str(value)
-    return "Candidate"
+    return ""
 
 
 def is_present(value: Any) -> bool:
@@ -290,4 +445,3 @@ def is_present(value: Any) -> bool:
         return bool(pd.notna(value))
     except (TypeError, ValueError):
         return True
-

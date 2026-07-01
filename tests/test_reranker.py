@@ -41,8 +41,11 @@ def test_reranker_uses_cross_encoder_scores_when_query_and_documents_are_availab
         candidate_documents=["Python systems experience", "Operations background"],
     )
 
+    # After normalize_scores(), [0.9, 0.2] → [1.0, 0.0].
+    # cand_a (Python doc, score=1.0) should rank above cand_b (Operations, score=0.0).
     assert list(ranked["candidate_id"]) == ["cand_a", "cand_b"]
-    assert list(ranked["rerank_score"]) == [0.9, 0.2]
+    assert ranked.iloc[0]["rerank_score"] == 1.0
+    assert ranked.iloc[1]["rerank_score"] == 0.0
 
 
 def test_reranker_falls_back_to_existing_score_sort_without_model_inputs() -> None:

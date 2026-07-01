@@ -231,9 +231,9 @@ class TextPreprocessor:
             "current_company": self._collect_current_company(record),
         }
         cleaned_sections = {
-            section: self.preprocess(text)
+            section: cleaned
             for section, text in sections.items()
-            if self.preprocess(text)
+            if (cleaned := self.preprocess(text))
         }
         document_parts = [
             f"{section} {cleaned_sections[section]}"
@@ -263,9 +263,9 @@ class TextPreprocessor:
             "location": self._collect_job_location(record),
         }
         cleaned_sections = {
-            section: self.preprocess(text)
+            section: cleaned
             for section, text in sections.items()
-            if self.preprocess(text)
+            if (cleaned := self.preprocess(text))
         }
         if normalized_skills:
             cleaned_sections["normalized_skills"] = self.preprocess(" ".join(normalized_skills))

@@ -1,4 +1,13 @@
-"""FAISS vector store abstractions for candidate retrieval."""
+"""FAISS vector store abstractions for candidate retrieval.
+
+Design notes
+------------
+* ``FaissVectorStore.is_built`` allows callers to check whether the index is
+  ready without triggering a search (used by ``RankingEngine`` for cache invalidation).
+* ``add_vectors()`` supports incremental index updates without a full rebuild
+  (NumPy fallback does a full rebuild since numpy arrays are immutable).
+* The metadata path is ``<index_path>.meta.json`` for discoverability.
+"""
 
 from __future__ import annotations
 
@@ -14,7 +23,7 @@ from src.logging_utils import logger
 try:
     import faiss
 except ImportError:
-    faiss = None
+    faiss = None  # type: ignore[assignment]
 
 
 @dataclass(frozen=True)
@@ -35,6 +44,11 @@ class FaissVectorStore:
         self.index: object | None = None
         self.item_ids: list[str] = []
         self.metadata: list[dict[str, Any]] = []
+
+    @property
+    def is_built(self) -> bool:
+        """Return True when an in-memory index is ready for search."""
+        return self.index is not None
 
     def build(
         self,
@@ -59,8 +73,46 @@ class FaissVectorStore:
             self.index = vectors / np.maximum(norms, 1e-12)
         else:
             self.index = faiss.IndexFlatIP(vectors.shape[1])
-            self.index.add(vectors)
+            self.index.add(vectors)  # type: ignore[union-attr]
         logger.info("Built FAISS index with {} vectors and dimension {}", vectors.shape[0], vectors.shape[1])
+
+    def add_vectors(
+        self,
+        embeddings: np.ndarray,
+        item_ids: list[str],
+        metadata: list[dict[str, Any]] | None = None,
+    ) -> None:
+        """Incrementally add new vectors to an existing index.
+
+        For the NumPy fallback the index is rebuilt because numpy arrays are
+        immutable; for a real FAISS index vectors are appended directly which
+        is O(new_vectors) rather than O(total_vectors).
+
+        Parameters
+        ----------
+        embeddings: 2D float32 array of shape (n_new, dim).
+        item_ids:   List of string IDs for the new vectors, length n_new.
+        metadata:   Optional list of metadata dicts for the new vectors.
+        """
+        if self.index is None:
+            raise RuntimeError("Cannot add vectors before building or loading a FAISS index")
+        vectors = np.asarray(embeddings, dtype=np.float32)
+        if vectors.ndim != 2:
+            raise ValueError("Embeddings must be a 2D array")
+        if len(item_ids) != vectors.shape[0]:
+            raise ValueError("item_ids length must match number of new embeddings")
+        new_meta = metadata or [{} for _ in range(vectors.shape[0])]
+        if faiss is None:
+            # NumPy fallback: concatenate and re-normalise.
+            existing = np.asarray(self.index, dtype=np.float32)
+            combined = np.vstack([existing, vectors])
+            norms = np.linalg.norm(combined, axis=1, keepdims=True)
+            self.index = combined / np.maximum(norms, 1e-12)
+        else:
+            self.index.add(vectors)  # type: ignore[union-attr]
+        self.item_ids.extend(item_ids)
+        self.metadata.extend(new_meta)
+        logger.info("Added {} vectors; index now has {} entries", len(item_ids), len(self.item_ids))
 
     def save(self) -> None:
         """Persist the FAISS index to disk."""
@@ -71,7 +123,7 @@ class FaissVectorStore:
             with self.index_path.open("wb") as handle:
                 np.save(handle, self.index)
         else:
-            faiss.write_index(self.index, str(self.index_path))
+            faiss.write_index(self.index, str(self.index_path))  # type: ignore[attr-defined]
         self._metadata_path().write_text(
             json.dumps({"item_ids": self.item_ids, "metadata": self.metadata}, indent=2),
             encoding="utf-8",
@@ -86,7 +138,7 @@ class FaissVectorStore:
             with self.index_path.open("rb") as handle:
                 self.index = np.load(handle)
         else:
-            self.index = faiss.read_index(str(self.index_path))
+            self.index = faiss.read_index(str(self.index_path))  # type: ignore[attr-defined]
         metadata_path = self._metadata_path()
         if metadata_path.exists():
             payload = json.loads(metadata_path.read_text(encoding="utf-8"))
@@ -117,8 +169,8 @@ class FaissVectorStore:
             distances = np.take_along_axis(scores, indices, axis=1)
             return distances, indices
 
-        k = max(1, min(top_k, self.index.ntotal))
-        distances, indices = self.index.search(query, k)
+        k = max(1, min(top_k, self.index.ntotal))  # type: ignore[union-attr]
+        distances, indices = self.index.search(query, k)  # type: ignore[union-attr]
         return distances, indices
 
     def retrieve(self, query_embedding: np.ndarray, top_k: int = 10) -> list[RetrievalMatch]:
@@ -148,5 +200,4 @@ class FaissVectorStore:
             return 0
         if faiss is None:
             return int(np.asarray(self.index).shape[0])
-        return int(self.index.ntotal)
-
+        return int(self.index.ntotal)  # type: ignore[union-attr]

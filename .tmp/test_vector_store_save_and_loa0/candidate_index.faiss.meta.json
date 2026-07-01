@@ -1,0 +1,14 @@
+{
+  "item_ids": [
+    "cand_a",
+    "cand_b"
+  ],
+  "metadata": [
+    {
+      "rank": 1
+    },
+    {
+      "rank": 2
+    }
+  ]
+}

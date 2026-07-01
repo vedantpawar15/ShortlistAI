@@ -1,0 +1,1 @@
+{"title": "Candidate", "properties": {"candidate_id": {"type": "string"}, "profile": {"properties": {"summary": {"type": "string"}}}}}

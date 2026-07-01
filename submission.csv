@@ -1,54 +1,54 @@
 candidate_id,rank,score,reasoning
-CAND_0000001,1,0.5491,"Overall fit is driven by semantic similarity 0.10, skill overlap 1.00, and experience match 0.77."
-CAND_0000032,2,0.5156,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.75, and experience match 0.90."
-CAND_0000031,3,0.4847,"Overall fit is driven by semantic similarity 0.13, skill overlap 0.75, and experience match 0.67."
-CAND_0000002,4,0.4801,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 1.00."
-CAND_0000048,5,0.4798,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 1.00."
-CAND_0000034,6,0.4699,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 1.00."
-CAND_0000030,7,0.4651,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 1.00."
-CAND_0000015,8,0.4631,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.75, and experience match 0.60."
-CAND_0000044,9,0.4615,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.75, and experience match 0.63."
-CAND_0000043,10,0.453,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 0.92."
-CAND_0000014,11,0.4495,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.93."
-CAND_0000010,12,0.4481,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.75, and experience match 0.51."
-CAND_0000026,13,0.4427,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.76."
-CAND_0000038,14,0.4318,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.50, and experience match 0.74."
-CAND_0000025,15,0.4297,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.81."
-CAND_0000024,16,0.4288,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.50, and experience match 0.83."
-CAND_0000018,17,0.4188,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.73."
-CAND_0000041,18,0.4139,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
-CAND_0000033,19,0.4107,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 0.96."
-CAND_0000020,20,0.4094,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.50, and experience match 0.70."
-CAND_0000021,21,0.4057,"Overall fit is driven by semantic similarity 0.13, skill overlap 0.25, and experience match 1.00."
-CAND_0000017,22,0.4037,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.25, and experience match 1.00."
-CAND_0000050,23,0.4027,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
-CAND_0000037,24,0.4026,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
-CAND_0000005,25,0.4016,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
-CAND_0000045,26,0.3985,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 1.00."
-CAND_0000009,27,0.3969,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.25, and experience match 1.00."
-CAND_0000036,28,0.3957,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 1.00."
-CAND_0000049,29,0.3935,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 1.00."
-CAND_0000042,30,0.3898,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.56."
-CAND_0000027,31,0.3818,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.43."
-CAND_0000035,32,0.3813,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.50, and experience match 0.48."
-CAND_0000004,33,0.3803,"Overall fit is driven by semantic similarity 0.11, skill overlap 0.50, and experience match 0.42."
-CAND_0000008,34,0.3801,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.50, and experience match 0.40."
-CAND_0000029,35,0.3718,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 0.80."
-CAND_0000046,36,0.3712,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.87."
-CAND_0000023,37,0.3699,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.41."
-CAND_0000019,38,0.3554,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 0.72."
-CAND_0000006,39,0.3506,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.67."
-CAND_0000011,40,0.3465,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.50, and experience match 0.22."
-CAND_0000007,41,0.3447,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.61."
-CAND_0000016,42,0.3398,"Overall fit is driven by semantic similarity 0.10, skill overlap 0.25, and experience match 0.59."
-CAND_0000022,43,0.3209,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.50, and experience match 0.12."
-CAND_0000039,44,0.3148,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.43."
-CAND_0000047,45,0.2813,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.27."
-CAND_0000028,46,0.2779,"Overall fit is driven by semantic similarity 0.09, skill overlap 0.25, and experience match 0.12."
-CAND_0000012,47,0.2751,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.12."
-CAND_0000040,48,0.268,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.18."
-CAND_0000013,49,0.2677,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.12."
-CAND_0000003,50,0.2599,"Overall fit is driven by semantic similarity 0.08, skill overlap 0.25, and experience match 0.12."
+CAND_0000001,1,0.6102,Fit driven by overall score 0.610. This places the candidate in the top 18% of applicants.
+CAND_0000032,2,0.576,Fit driven by overall score 0.576. This places the candidate in the top 10% of applicants.
+CAND_0000031,3,0.5492,Fit driven by overall score 0.549. This places the candidate in the top 2% of applicants.
+CAND_0000048,4,0.5408,Fit driven by overall score 0.541. This places the candidate in the top 4% of applicants.
+CAND_0000034,5,0.5323,Fit driven by overall score 0.532. This places the candidate in the top 40% of applicants.
+CAND_0000002,6,0.5276,Fit driven by overall score 0.528. This places the candidate in the top 46% of applicants.
+CAND_0000030,7,0.5255,Fit driven by overall score 0.525. This places the candidate in the top 26% of applicants.
+CAND_0000044,8,0.5205,Fit driven by overall score 0.521. This places the candidate in the top 6% of applicants.
+CAND_0000015,9,0.5103,Fit driven by overall score 0.510. This places the candidate in the top 52% of applicants.
+CAND_0000010,10,0.5069,Fit driven by overall score 0.507. This places the candidate in the top 12% of applicants.
+CAND_0000026,11,0.5032,Fit driven by overall score 0.503. This places the candidate in the top 14% of applicants.
+CAND_0000043,12,0.5012,Fit driven by overall score 0.501. This places the candidate in the top 32% of applicants.
+CAND_0000014,13,0.4983,Fit driven by overall score 0.498. This places the candidate in the top 34% of applicants.
+CAND_0000038,14,0.4908,Fit driven by overall score 0.491. This places the candidate in the top 54% of applicants.
+CAND_0000024,15,0.4902,Fit driven by overall score 0.490. This places the candidate in the top 36% of applicants.
+CAND_0000018,16,0.4791,Fit driven by overall score 0.479. This places the candidate in the top 16% of applicants.
+CAND_0000025,17,0.4782,Fit driven by overall score 0.478. This places the candidate in the top 8% of applicants.
+CAND_0000041,18,0.4745,Fit driven by overall score 0.474. This places the candidate in the top 38% of applicants.
+CAND_0000033,19,0.4706,Fit driven by overall score 0.471. This places the candidate in the top 64% of applicants.
+CAND_0000020,20,0.4691,Fit driven by overall score 0.469. This places the candidate in the top 70% of applicants.
+CAND_0000017,21,0.4647,Fit driven by overall score 0.465. This places the candidate in the top 78% of applicants.
+CAND_0000005,22,0.4624,Fit driven by overall score 0.462. This places the candidate in the top 28% of applicants.
+CAND_0000037,23,0.462,Fit driven by overall score 0.462. This places the candidate in the top 80% of applicants.
+CAND_0000050,24,0.4615,Fit driven by overall score 0.462. This places the candidate in the top 24% of applicants.
+CAND_0000045,25,0.4593,Fit driven by overall score 0.459. This places the candidate in the top 58% of applicants.
+CAND_0000021,26,0.4572,Fit driven by overall score 0.457. This places the candidate in the top 86% of applicants.
+CAND_0000042,27,0.4506,Fit driven by overall score 0.451. This places the candidate in the top 66% of applicants.
+CAND_0000027,28,0.4426,Fit driven by overall score 0.443. This places the candidate in the top 44% of applicants.
+CAND_0000035,29,0.4409,Fit driven by overall score 0.441. This places the candidate in the top 20% of applicants.
+CAND_0000049,30,0.4404,Fit driven by overall score 0.440. This places the candidate in the top 72% of applicants.
+CAND_0000004,31,0.4399,Fit driven by overall score 0.440. This places the candidate in the top 30% of applicants.
+CAND_0000008,32,0.4396,Fit driven by overall score 0.440. This places the candidate in the top 74% of applicants.
+CAND_0000009,33,0.4333,Fit driven by overall score 0.433. This places the candidate in the top 82% of applicants.
+CAND_0000023,34,0.4314,Fit driven by overall score 0.431. This places the candidate in the top 60% of applicants.
+CAND_0000036,35,0.4298,Fit driven by overall score 0.430. This places the candidate in the top 50% of applicants.
+CAND_0000046,36,0.4181,Fit driven by overall score 0.418. This places the candidate in the top 94% of applicants.
+CAND_0000019,37,0.4156,Fit driven by overall score 0.416. This places the candidate in the top 76% of applicants.
+CAND_0000011,38,0.4079,Fit driven by overall score 0.408. This places the candidate in the top 62% of applicants.
+CAND_0000029,39,0.4078,Fit driven by overall score 0.408. This places the candidate in the top 22% of applicants.
+CAND_0000007,40,0.4027,Fit driven by overall score 0.403. This places the candidate in the top 84% of applicants.
+CAND_0000006,41,0.3852,Fit driven by overall score 0.385. This places the candidate in the top 42% of applicants.
+CAND_0000022,42,0.3778,Fit driven by overall score 0.378. This places the candidate in the top 88% of applicants.
+CAND_0000016,43,0.3742,Fit driven by overall score 0.374. This places the candidate in the top 48% of applicants.
+CAND_0000039,44,0.3601,Fit driven by overall score 0.360. This places the candidate in the top 92% of applicants.
+CAND_0000013,45,0.3248,Fit driven by overall score 0.325. This places the candidate in the top 90% of applicants.
+CAND_0000047,46,0.3247,Fit driven by overall score 0.325. This places the candidate in the top 68% of applicants.
+CAND_0000028,47,0.3218,Fit driven by overall score 0.322. This places the candidate in the top 56% of applicants.
+CAND_0000012,48,0.3209,Fit driven by overall score 0.321. This places the candidate in the top 100% of applicants.
+CAND_0000003,49,0.3192,Fit driven by overall score 0.319. This places the candidate in the top 98% of applicants.
+CAND_0000040,50,0.3129,Fit driven by overall score 0.313. This places the candidate in the top 96% of applicants.
 CAND_0000084,51,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
 CAND_0000164,52,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
 CAND_0000168,53,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
