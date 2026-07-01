@@ -38,7 +38,7 @@ AI Models       BAAI/bge-small-en-v1.5  (embedding, HuggingFace)
 Vector Search   FAISS  (Facebook AI Similarity Search)
 Data            Pandas, NumPy
 API             FastAPI + Uvicorn
-Dashboard       Streamlit + Plotly
+Frontend        React 19, Vite, Recharts, Three.js (React Three Fiber)
 Validation      Pydantic v2
 Testing         pytest  (129 tests, 100% offline)
 Config          pydantic-settings (.env support)
@@ -128,7 +128,7 @@ This is the exact flow from raw files to ranked output:
   OUTPUT
   ┌─────────────────────────────┐
   │  submission.csv             │  candidate_id, rank, score, reasoning
-  │  Streamlit Dashboard        │  visual charts + detail panels
+  │  React SPA Dashboard        │  visual charts, radar graphs, 3D landing page
   │  REST API (/rank, /explain) │  integrate into any recruiter tool
   └─────────────────────────────┘
 ```
@@ -244,28 +244,24 @@ Thresholds for "strength" vs "gap" are **dynamically calibrated** from the batch
 
 ---
 
-## 8. The Dashboard
+## 8. The React Frontend Dashboard
 
-Run `streamlit run app.py` to open the visual interface.
+Run `cd frontend && npm run dev` to open the visual interface.
 
-### Tab 1 — Overview
-- **KPI row**: total candidates, average score, top score, % strong-fit candidates
-- **Top-N bar chart**: horizontal bars coloured by tier (🟢 Strong / 🟡 Moderate / 🔴 Weak)
-- **Score distribution histogram**: see how the applicant pool clusters
+### The Landing Page (/home)
+- **3D Hero Section**: A modern mesh-gradient hero featuring floating interactive 3D geometries (powered by Three.js).
+- **Drag-and-Drop Upload**: Instantly drop a CSV/JSON of candidates to begin AI ranking.
 
-### Tab 2 — Candidates
-- **Ranked table**: colour-gradient scoring, sortable
-- **Candidate detail panel**: click any candidate to see:
-  - Score progress bars per dimension
-  - Radar/spider chart showing the 7-dimensional profile
-  - Full reasoning text
-- **CSV export button**: download the ranked list
+### The Dashboard (/dashboard)
+- **KPI row**: Total candidates, average score, top score, and strong-fit candidate count.
+- **Top-N bar chart**: Visual ranking of the best candidates in the pool.
+- **Score distribution area chart**: See how the applicant pool's talent curve clusters.
+- **Candidate detail panel**: Click any candidate to see:
+  - Component score progress bars.
+  - A highly visual Radar/Spider chart highlighting the 7-dimensional profile.
+  - Full plain-English reasoning text.
 
-### Tab 3 — Analysis
-- **Score component heatmap**: see at a glance which candidates are strong/weak on each dimension
-
-### Tab 4 — About
-- Pipeline diagram, weight table, CLI reference
+*(Note: The legacy Streamlit dashboard is also included via `streamlit run app.py`)*
 
 ---
 
@@ -341,9 +337,10 @@ python main.py rank
 python tools/validate_submission.py submission.csv
 # → Submission is valid
 
-# Step 4 — Open the dashboard
-streamlit run app.py
-# → http://localhost:8501
+# Step 4 — Open the frontend
+cd frontend
+npm run dev
+# → http://localhost:5173/home
 ```
 
 ---
@@ -394,6 +391,6 @@ This gives a quick sanity check — if `mean` is too low, the job description ma
 | **Explainability** | Every decision is interpretable by a non-technical recruiter |
 | **Production-readiness** | FastAPI, Pydantic validation, Loguru logging, graceful fallbacks |
 | **Testing discipline** | 129 tests, 0 failures, fake-dependency isolation |
-| **UX** | Professional 4-tab Streamlit dashboard with radar charts and heatmaps |
+| **UX** | Professional React SPA with Recharts, interactive 3D elements, and clean routing |
 | **Offline-first** | Works in air-gapped enterprise environments |
 | **Extensibility** | Dependency injection throughout — swap any component with a custom one |

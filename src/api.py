@@ -13,7 +13,7 @@ POST /explain/{candidate_id}    — Generate a structured explanation for one ca
 from __future__ import annotations
 
 try:
-    from fastapi import FastAPI, HTTPException, Query
+    from fastapi import FastAPI, HTTPException, Query, UploadFile, File
     from fastapi.middleware.cors import CORSMiddleware
     _FASTAPI = True
 except ImportError:
@@ -151,6 +151,25 @@ def create_app() -> FastAPI:
     def rank_candidates_endpoint(request: RankRequest) -> RankResponse:
         """Rank candidates for a given job posting."""
         return rank_candidates(request)
+
+    @app.post("/upload-candidates", response_model=dict, tags=["data"])
+    def upload_candidates(file: UploadFile = File(...)) -> dict:
+        """Upload a custom candidates CSV/JSON file to the server."""
+        import shutil
+        from pathlib import Path
+        
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No filename provided")
+            
+        file_path = Path(settings.data_dir) / file.filename
+        
+        try:
+            with file_path.open("wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Could not save file: {e}")
+            
+        return {"filename": file.filename, "message": "File uploaded successfully"}
 
     @app.get("/rank/{job_id}", response_model=RankResponse, tags=["ranking"])
     def rank_by_job_id(

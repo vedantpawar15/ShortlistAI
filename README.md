@@ -92,11 +92,13 @@ python main.py rank
 # Validate submission format
 python tools/validate_submission.py submission.csv
 
-# Launch Streamlit dashboard
-streamlit run app.py
-
 # Start FastAPI REST server
 uvicorn src.api:app --reload
+
+# Start the Modern React Frontend (in a new terminal)
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
@@ -190,20 +192,21 @@ python -m pytest tests/ -v --cov=src --cov-report=term-missing
 
 ---
 
-## Dashboard
+## React Frontend
 
 ```bash
-streamlit run app.py
+cd frontend
+npm run dev
 ```
 
-The **4-tab professional Streamlit dashboard** includes:
+The **Modern React Dashboard** includes:
 
-| Tab | Contents |
+| View | Contents |
 |-----|----------|
-| 📈 **Overview** | KPI row (count, avg/top score, strong-fit %), top-N bar chart with tier colouring, score histogram |
-| 👤 **Candidates** | Filterable ranked table, candidate detail panel with score progress bars and radar chart, CSV export |
-| 🔬 **Analysis** | Score component heatmap (RdYlGn) across top-20 candidates |
-| 📖 **About** | Pipeline diagram, score weight table, CLI reference |
+| 🏠 **Landing Page** | Beautiful 3D animated graphics, seamless drag-and-drop CSV/JSON upload, and a hero section. |
+| 📊 **Dashboard** | KPI summary (count, avg/top score), ranked candidate table, area chart for score distribution, and interactive radar charts for candidate deep-dives. |
+
+*(A legacy Streamlit dashboard is also available via `streamlit run app.py`)*
 
 ---
 

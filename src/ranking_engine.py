@@ -185,7 +185,7 @@ class RankingEngine:
         )
         metrics.log()
 
-        return ranked[["candidate_id", "rank", "score", "reasoning"]]
+        return ranked
 
     def _retrieve_candidates(
         self,

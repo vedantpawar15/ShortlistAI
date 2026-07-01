@@ -89,7 +89,8 @@ def test_rank_candidates_returns_required_columns(
     )
     result = engine.rank_candidates(sample_candidates, sample_job)
 
-    assert set(result.columns) == {"candidate_id", "rank", "score", "reasoning"}
+    required_columns = {"candidate_id", "rank", "score", "reasoning"}
+    assert required_columns.issubset(set(result.columns))
 
 
 def test_rank_candidates_returns_all_candidates(
