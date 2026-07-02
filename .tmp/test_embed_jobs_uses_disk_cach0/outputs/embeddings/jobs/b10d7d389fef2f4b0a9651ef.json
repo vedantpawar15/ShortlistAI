@@ -1,0 +1,12 @@
+{
+  "model_name": "fake-model",
+  "device": "cpu",
+  "cache_key": "b10d7d389fef2f4b0a9651ef",
+  "document_count": 2,
+  "embedding_shape": [
+    2,
+    3
+  ],
+  "normalize_embeddings": true,
+  "batch_size": 2
+}

@@ -18,7 +18,6 @@ env/
 *.jsonl
 __pycache__/
 logs/
-outputs/
 
 logs/*.log
 outputs/*
