@@ -1,0 +1,101 @@
+candidate_id,rank,score,reasoning
+CAND_0000031,1,0.74,"Strong fit: Strong skill match: artificial intelligence, machine learning, natural language processing Gap: Missing required skills: python Candidate has highly positive behavioral signals. (Top 2%)"
+CAND_0000001,2,0.736,"Strong fit: Strong skill match: artificial intelligence, machine learning, natural language processing, python No major gaps. Candidate has highly positive behavioral signals. (Top 26%)"
+CAND_0000038,3,0.7236,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 32%)"
+CAND_0000033,4,0.7191,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 34%)"
+CAND_0000048,5,0.7177,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 4%)"
+CAND_0000032,6,0.7163,"Strong fit: Strong skill match: artificial intelligence, machine learning, python Gap: Missing required skills: natural language processing (Top 10%)"
+CAND_0000014,7,0.714,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 16%)"
+CAND_0000045,8,0.7134,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 30%)"
+CAND_0000010,9,0.7123,"Strong fit: Strong skill match: artificial intelligence, machine learning, python Gap: Missing required skills: natural language processing Candidate has highly positive behavioral signals. (Top 12%)"
+CAND_0000002,10,0.7116,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python (Top 50%)"
+CAND_0000041,11,0.7112,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 28%)"
+CAND_0000026,12,0.7103,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python (Top 14%)"
+CAND_0000046,13,0.7058,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 60%)"
+CAND_0000017,14,0.7052,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 68%)"
+CAND_0000027,15,0.7049,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 24%)"
+CAND_0000009,16,0.7042,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 52%)"
+CAND_0000020,17,0.7038,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python (Top 70%)"
+CAND_0000025,18,0.7026,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 6%)"
+CAND_0000024,19,0.7024,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 44%)"
+CAND_0000044,20,0.7023,"Strong fit: Strong skill match: artificial intelligence, machine learning, python Gap: Missing required skills: natural language processing (Top 8%)"
+CAND_0000034,21,0.6998,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 78%)"
+CAND_0000049,22,0.6997,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 62%)"
+CAND_0000004,23,0.6993,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 22%)"
+CAND_0000018,24,0.6965,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 36%)"
+CAND_0000023,25,0.6942,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 48%)"
+CAND_0000035,26,0.6937,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 18%)"
+CAND_0000019,27,0.6936,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 58%)"
+CAND_0000007,28,0.693,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 66%)"
+CAND_0000015,29,0.6914,"Strong fit: Strong skill match: artificial intelligence, machine learning, python Gap: Missing required skills: natural language processing Candidate has highly positive behavioral signals. (Top 88%)"
+CAND_0000050,30,0.6898,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 38%)"
+CAND_0000005,31,0.6882,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 40%)"
+CAND_0000030,32,0.6869,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python (Top 76%)"
+CAND_0000043,33,0.682,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python (Top 72%)"
+CAND_0000029,34,0.6819,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 20%)"
+CAND_0000037,35,0.6808,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 94%)"
+CAND_0000022,36,0.68,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 80%)"
+CAND_0000047,37,0.6778,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 56%)"
+CAND_0000013,38,0.6773,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 86%)"
+CAND_0000039,39,0.6767,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 90%)"
+CAND_0000011,40,0.6734,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python Candidate has highly positive behavioral signals. (Top 74%)"
+CAND_0000006,41,0.6717,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 42%)"
+CAND_0000042,42,0.6698,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python (Top 82%)"
+CAND_0000021,43,0.6697,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 96%)"
+CAND_0000008,44,0.6622,"Strong fit: Strong skill match: artificial intelligence, machine learning Gap: Missing required skills: natural language processing, python (Top 84%)"
+CAND_0000016,45,0.658,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 46%)"
+CAND_0000040,46,0.6564,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 92%)"
+CAND_0000036,47,0.6556,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 64%)"
+CAND_0000028,48,0.655,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 54%)"
+CAND_0000003,49,0.655,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python Candidate has highly positive behavioral signals. (Top 98%)"
+CAND_0000012,50,0.6424,"Strong fit: Strong skill match: artificial intelligence Gap: Missing required skills: machine learning, natural language processing, python (Top 100%)"
+CAND_0000084,51,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000164,52,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000168,53,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000217,54,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000239,55,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000251,56,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000268,57,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000339,58,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000450,59,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000459,60,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000542,61,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000557,62,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000581,63,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000699,64,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000718,65,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000776,66,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000791,67,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000799,68,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000899,69,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0000958,70,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001021,71,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001082,72,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001154,73,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001195,74,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001218,75,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001257,76,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001292,77,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001294,78,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001355,79,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001378,80,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001381,81,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001397,82,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001424,83,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001503,84,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001550,85,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001586,86,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001653,87,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001724,88,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001753,89,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001771,90,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001795,91,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0001839,92,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002018,93,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002019,94,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002164,95,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002234,96,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002255,97,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002317,98,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002438,99,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
+CAND_0002446,100,0.0,Candidate was present in the submission template but absent from sample_candidates.json.
